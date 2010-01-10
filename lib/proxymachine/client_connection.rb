@@ -40,7 +40,10 @@ class ProxyMachine
         close_connection unless commands.instance_of?(Hash)
         if remote = commands[:remote]
           m, host, port = *remote.match(/^(.+):(.+)$/)
-          if try_server_connect(host, port.to_i)
+          klass = commands[:callback] ? CallbackServerConnection : ServerConnection
+          if try_server_connect(host, port.to_i, klass)
+            @server_side.callback = commands[:callback] if commands[:callback]
+            
             if data = commands[:data]
               @buffer = [data]
             end
@@ -64,8 +67,8 @@ class ProxyMachine
       end
     end
 
-    def try_server_connect(host, port)
-      @server_side = ServerConnection.request(host, port, self)
+    def try_server_connect(host, port, klass)
+      @server_side = klass.request(host, port, self)
       proxy_incoming_to(@server_side, 10240)
       LOGGER.info "Successful connection to #{host}:#{port}."
       true

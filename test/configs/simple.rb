@@ -1,5 +1,9 @@
 LOGGER = Logger.new(File.new('/dev/null', 'w'))
 
+callback = proc do |data|
+  data + ":callback"
+end
+
 proxy do |data|
   if data == 'a'
     { :remote => "localhost:9980" }
@@ -15,6 +19,8 @@ proxy do |data|
     { :remote => "localhost:9980" }
   elsif data == 'g'
     { :remote => "localhost:9980", :data => 'g2', :reply => 'g3-' }
+  elsif data == 'h'
+    { :remote => "localhost:9980", :callback => callback }
   else
     { :close => true }
   end

@@ -5,6 +5,7 @@ require 'socket'
 
 require 'proxymachine/client_connection'
 require 'proxymachine/server_connection'
+require 'proxymachine/callback_server_connection'
 
 LOGGER = Logger.new(STDOUT)
 

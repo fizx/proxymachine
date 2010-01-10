@@ -40,4 +40,9 @@ class ProxymachineTest < Test::Unit::TestCase
     assert_equal '9980:' + 'e' * 2048 + 'f', sock.read
     sock.close
   end
+
+  should "execute a callback" do
+    assert_nil $callback_executed
+    assert_proxy('localhost', 9990, 'h', '9980:h:callback')
+  end
 end
