@@ -1,4 +1,4 @@
-LOGGER = Logger.new(File.new('/dev/null', 'w'))
+$logger = Logger.new(File.new('/dev/null', 'w'))
 
 callback = proc do |data|
   data + ":callback"

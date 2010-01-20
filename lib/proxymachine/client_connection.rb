@@ -2,13 +2,13 @@ class ProxyMachine
   class ClientConnection < EventMachine::Connection
     def self.start(host, port)
       $server = EM.start_server(host, port, self)
-      LOGGER.info "Listening on #{host}:#{port}"
-      LOGGER.info "Send QUIT to quit after waiting for all connections to finish."
-      LOGGER.info "Send TERM or INT to quit after waiting for up to 10 seconds for connections to finish."
+      $logger.info "Listening on #{host}:#{port}"
+      $logger.info "Send QUIT to quit after waiting for all connections to finish."
+      $logger.info "Send TERM or INT to quit after waiting for up to 10 seconds for connections to finish."
     end
 
     def post_init
-      LOGGER.info "Accepted #{peer}"
+      $logger.info "Accepted #{peer}"
       @buffer = []
       @tries = 0
       ProxyMachine.incr
@@ -29,14 +29,14 @@ class ProxyMachine
       end
     rescue => e
       close_connection
-      LOGGER.info "#{e.class} - #{e.message}"
+      $logger.info "#{e.class} - #{e.message}"
     end
 
     def ensure_server_side_connection
       @timer.cancel if @timer
       unless @server_side
         commands = ProxyMachine.router.call(@buffer.join)
-        LOGGER.info "#{peer} #{commands.inspect}"
+        $logger.info "#{peer} #{commands.inspect}"
         close_connection unless commands.instance_of?(Hash)
         if remote = commands[:remote]
           m, host, port = *remote.match(/^(.+):(.+)$/)
@@ -70,18 +70,18 @@ class ProxyMachine
     def try_server_connect(host, port, klass)
       @server_side = klass.request(host, port, self)
       proxy_incoming_to(@server_side, 10240)
-      LOGGER.info "Successful connection to #{host}:#{port}."
+      $logger.info "Successful connection to #{host}:#{port}."
       true
     rescue => e
       if @tries < 10
         @tries += 1
-        LOGGER.info "Failed on server connect attempt #{@tries}. Trying again..."
+        $logger.info "Failed on server connect attempt #{@tries}. Trying again..."
         @timer.cancel if @timer
         @timer = EventMachine::Timer.new(0.1) do
           self.ensure_server_side_connection
         end
       else
-        LOGGER.info "Failed after ten connection attempts."
+        $logger.info "Failed after ten connection attempts."
       end
       false
     end

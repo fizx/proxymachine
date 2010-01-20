@@ -38,8 +38,8 @@ rescue Exception => e
   if e.instance_of?(SystemExit)
     raise
   else
-    LOGGER.info 'Uncaught exception'
-    LOGGER.info e.message
-    LOGGER.info e.backtrace.join("\n")
+    $logger.info 'Uncaught exception'
+    $logger.info e.message
+    $logger.info e.backtrace.join("\n")
   end
 end

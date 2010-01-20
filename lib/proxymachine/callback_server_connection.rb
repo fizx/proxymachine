@@ -17,7 +17,7 @@ class ProxyMachine
         @client_side.send_data returned
       end
     rescue => e
-      LOGGER.info e.message + e.backtrace.join("\n")
+      $logger.info e.message + e.backtrace.join("\n")
     end
 
     def unbind

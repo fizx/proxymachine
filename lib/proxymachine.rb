@@ -7,7 +7,7 @@ require 'proxymachine/client_connection'
 require 'proxymachine/server_connection'
 require 'proxymachine/callback_server_connection'
 
-LOGGER = Logger.new(STDOUT)
+$logger = Logger.new(STDOUT)
 
 class ProxyMachine
   MAX_FAST_SHUTDOWN_SECONDS = 10
@@ -35,7 +35,7 @@ class ProxyMachine
   def self.decr
     @@counter -= 1
     if $server.nil?
-      LOGGER.info "Waiting for #{@@counter} connections to finish."
+      $logger.info "Waiting for #{@@counter} connections to finish."
     end
     self.update_procline
     EM.stop if $server.nil? and @@counter == 0
@@ -52,17 +52,17 @@ class ProxyMachine
 
   def self.graceful_shutdown(signal)
     EM.stop_server($server) if $server
-    LOGGER.info "Received #{signal} signal. No longer accepting new connections."
-    LOGGER.info "Waiting for #{ProxyMachine.count} connections to finish."
+    $logger.info "Received #{signal} signal. No longer accepting new connections."
+    $logger.info "Waiting for #{ProxyMachine.count} connections to finish."
     $server = nil
     EM.stop if ProxyMachine.count == 0
   end
 
   def self.fast_shutdown(signal)
     EM.stop_server($server) if $server
-    LOGGER.info "Received #{signal} signal. No longer accepting new connections."
-    LOGGER.info "Maximum time to wait for connections is #{MAX_FAST_SHUTDOWN_SECONDS} seconds."
-    LOGGER.info "Waiting for #{ProxyMachine.count} connections to finish."
+    $logger.info "Received #{signal} signal. No longer accepting new connections."
+    $logger.info "Maximum time to wait for connections is #{MAX_FAST_SHUTDOWN_SECONDS} seconds."
+    $logger.info "Waiting for #{ProxyMachine.count} connections to finish."
     $server = nil
     EM.stop if ProxyMachine.count == 0
     Thread.new do
