@@ -14,8 +14,8 @@ Gem::Specification.new do |s|
   ## the sub! line in the Rakefile
   s.name              = 'fizx-proxymachine'
   s.version           = '1.2.4'
-  s.date              = '2011-02-01'
-  s.rubyforge_project = 'proxymachine'
+  s.date              = '2011-05-07'
+  s.rubyforge_project = 'fizx-proxymachine'
 
   ## Make sure your summary is short. The description may be as long
   ## as you like.
@@ -66,10 +66,12 @@ Gem::Specification.new do |s|
     examples/git.rb
     examples/long.rb
     examples/transparent.rb
+    fizx-proxymachine.gemspec
+    lib/fizx-proxymachine.rb
     lib/proxymachine.rb
+    lib/proxymachine/callback_server_connection.rb
     lib/proxymachine/client_connection.rb
     lib/proxymachine/server_connection.rb
-    proxymachine.gemspec
     test/configs/simple.rb
     test/proxymachine_test.rb
     test/test_helper.rb
