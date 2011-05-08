@@ -21,7 +21,21 @@ proxy do |data|
     { :remote => "localhost:9980", :data => 'g2', :reply => 'g3-' }
   elsif data == 'h'
     { :remote => "localhost:9980", :callback => callback }
+  elsif data == 'connect reject'
+    { :remote => "localhost:9989" }
+  elsif data == 'inactivity'
+    { :remote => "localhost:9980", :data => 'sleep 3', :inactivity_timeout => 1 }
   else
     { :close => true }
   end
+end
+
+ERROR_FILE = File.expand_path('../../proxy_error', __FILE__)
+
+proxy_connect_error do |remote|
+  File.open(ERROR_FILE, 'wb') { |fd| fd.write("connect error: #{remote}") }
+end
+
+proxy_inactivity_error do |remote|
+  File.open(ERROR_FILE, 'wb') { |fd| fd.write("activity error: #{remote}") }
 end

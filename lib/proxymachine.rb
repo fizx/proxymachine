@@ -1,4 +1,4 @@
-require 'rubygems'
+require 'yaml'
 require 'eventmachine'
 require 'logger'
 require 'socket'
@@ -10,6 +10,8 @@ require 'proxymachine/callback_server_connection'
 $logger = Logger.new(STDOUT)
 
 class ProxyMachine
+  VERSION = '1.2.4'
+
   MAX_FAST_SHUTDOWN_SECONDS = 10
 
   def self.update_procline
@@ -71,12 +73,30 @@ class ProxyMachine
     end
   end
 
+  def self.set_connect_error_callback(&block)
+    @@connect_error_callback = block
+  end
+
+  def self.connect_error_callback
+    @@connect_error_callback
+  end
+
+  def self.set_inactivity_error_callback(&block)
+    @@inactivity_error_callback = block
+  end
+
+  def self.inactivity_error_callback
+    @@inactivity_error_callback
+  end
+
   def self.run(name, host, port)
     @@totalcounter = 0
     @@maxcounter = 0
     @@counter = 0
     @@name = name
     @@listen = "#{host}:#{port}"
+    @@connect_error_callback ||= proc { |remote| }
+    @@inactivity_error_callback ||= proc { |remote| }
     self.update_procline
     EM.epoll
 
@@ -93,19 +113,18 @@ class ProxyMachine
       end
     end
   end
-
-  def self.version
-    yml = YAML.load(File.read(File.join(File.dirname(__FILE__), *%w[.. VERSION.yml])))
-    "#{yml[:major]}.#{yml[:minor]}.#{yml[:patch]}"
-  rescue
-    'unknown'
-  end
-
-  VERSION = self.version
 end
 
 module Kernel
   def proxy(&block)
     ProxyMachine.set_router(block)
+  end
+
+  def proxy_connect_error(&block)
+    ProxyMachine.set_connect_error_callback(&block)
+  end
+
+  def proxy_inactivity_error(&block)
+    ProxyMachine.set_inactivity_error_callback(&block)
   end
 end
