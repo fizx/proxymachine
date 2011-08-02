@@ -55,6 +55,8 @@ class ProxyMachine
         end
         @connect_timeout = @commands[:connect_timeout]
         @inactivity_timeout = @commands[:inactivity_timeout]
+        @connect_error_callback = @commands[:connect_error_callback]
+        @inactivity_error_callback = @commands[:inactivity_error_callback]
         connect_to_server
       elsif close = @commands[:close]
         if close == true
@@ -103,7 +105,7 @@ class ProxyMachine
       if @connected
         $logger.error "Connection with #{@remote.join(':')} was terminated prematurely."
         close_connection
-        ProxyMachine.connect_error_callback.call(@remote.join(':'))
+        (@connect_error_callback || ProxyMachine.connect_error_callback).call(@remote.join(':'))
       elsif @tries < 10
         @tries += 1
         $logger.warn "Retrying connection with #{@remote.join(':')} (##{@tries})"
@@ -111,7 +113,7 @@ class ProxyMachine
       else
         $logger.error "Connect #{@remote.join(':')} failed after ten attempts."
         close_connection
-        ProxyMachine.connect_error_callback.call(@remote.join(':'))
+        (@connect_error_callback || ProxyMachine.connect_error_callback).call(@remote.join(':'))
       end
     end
 
@@ -123,7 +125,7 @@ class ProxyMachine
       $logger.error "Disconnecting #{@remote.join(':')} after #{elapsed}s of inactivity (> #{timeout.inspect})"
       @server_side = nil
       close_connection
-      ProxyMachine.inactivity_error_callback.call(@remote.join(':'))
+      (@inactivity_error_callback || ProxyMachine.inactivity_error_callback).call(@remote.join(':'))
     end
 
     def unbind
