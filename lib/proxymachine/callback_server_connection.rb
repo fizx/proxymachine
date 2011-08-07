@@ -19,9 +19,5 @@ class ProxyMachine
     rescue => e
       $logger.info e.message + e.backtrace.join("\n")
     end
-
-    def unbind
-      @client_side.close_connection_after_writing
-    end
   end
 end

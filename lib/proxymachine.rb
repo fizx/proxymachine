@@ -10,7 +10,7 @@ require 'proxymachine/callback_server_connection'
 $logger = Logger.new(STDOUT)
 
 class ProxyMachine
-  VERSION = '1.2.4'
+  VERSION = '1.5.2'
 
   MAX_FAST_SHUTDOWN_SECONDS = 10
 

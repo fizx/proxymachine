@@ -76,7 +76,7 @@ class ProxyMachine
     def connect_to_server
       fail "connect_server called without remote established" if @remote.nil?
       host, port = @remote
-      $logger.info "Establishing new connection with #{host}:#{port}"
+      $logger.info "Establishing new connection with #{host}:#{port} OHAI"
       cb = @commands[:callback]
       klass = cb ? CallbackServerConnection : ServerConnection
       @server_side = klass.request(host, port, self)
@@ -107,7 +107,7 @@ class ProxyMachine
         $logger.error "Connection with #{@remote.join(':')} was terminated prematurely."
         close_connection
         (@connect_error_callback || ProxyMachine.connect_error_callback).call(@remote.join(':'))
-      elsif @tries < 10
+      elsif @tries < 2
         @tries += 1
         $logger.warn "Retrying connection with #{@remote.join(':')} (##{@tries})"
         EM.add_timer(0.1) { connect_to_server }
