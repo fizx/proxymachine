@@ -76,7 +76,7 @@ class ProxyMachine
     def connect_to_server
       fail "connect_server called without remote established" if @remote.nil?
       host, port = @remote
-      $logger.info "Establishing new connection with #{host}:#{port} OHAI"
+      $logger.info "Establishing new connection with #{host}:#{port}"
       cb = @commands[:callback]
       klass = cb ? CallbackServerConnection : ServerConnection
       @server_side = klass.request(host, port, self)
