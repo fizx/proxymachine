@@ -83,7 +83,6 @@ class ProxyMachine
       @server_side.callback = cb if cb
       @server_side.pending_connect_timeout = @connect_timeout
       @server_side.comm_inactivity_timeout = @inactivity_timeout
-      server_connection_failed if @server_side.error?
     end
 
     # Called by the server side immediately after the server connection was
