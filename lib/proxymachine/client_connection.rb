@@ -42,6 +42,7 @@ class ProxyMachine
     def establish_remote_server
       fail "establish_remote_server called with remote established" if @remote
       @routes = [ProxyMachine.router.call(@buffer.join)].flatten
+      try_connect
     end
     
     def try_connect
