@@ -30,7 +30,7 @@ proxy do |data|
   end
 end
 
-ERROR_FILE = File.expand_path('../../proxy_error', __FILE__)
+ERROR_FILE = File.expand_path('/tmp/proxy_error', __FILE__)
 
 proxy_connect_error do |remote|
   File.open(ERROR_FILE, 'wb') { |fd| fd.write("connect error: #{remote}") }

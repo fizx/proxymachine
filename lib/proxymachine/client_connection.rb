@@ -41,7 +41,11 @@ class ProxyMachine
     # attempt is made to connect and proxy to the remote server.
     def establish_remote_server
       fail "establish_remote_server called with remote established" if @remote
-      @commands = ProxyMachine.router.call(@buffer.join)
+      @routes = [ProxyMachine.router.call(@buffer.join)].flatten
+    end
+    
+    def try_connect
+      @commands = @routes.shift
       $logger.info "#{peer} #{@commands.inspect}"
       close_connection unless @commands.instance_of?(Hash)
       if remote = @commands[:remote]
@@ -106,12 +110,12 @@ class ProxyMachine
         $logger.error "Connection with #{@remote.join(':')} was terminated prematurely."
         close_connection
         (@connect_error_callback || ProxyMachine.connect_error_callback).call(@remote.join(':'))
-      elsif @tries < 2
+      elsif @routes.size > 0
         @tries += 1
         $logger.warn "Retrying connection with #{@remote.join(':')} (##{@tries})"
-        EM.add_timer(0.1) { connect_to_server }
+        EM.add_timer(0.1) { try_connect }
       else
-        $logger.error "Connect #{@remote.join(':')} failed after ten attempts."
+        $logger.error "Connect #{@remote.join(':')} failed after exhausting failovers."
         close_connection
         (@connect_error_callback || ProxyMachine.connect_error_callback).call(@remote.join(':'))
       end
