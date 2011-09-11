@@ -1,9 +1,9 @@
 class ProxyMachine
-  class CallbackServerConnection < ServerConnection
-    
-    def post_init
-      # empty
-    end
+  class CallbackServerConnection < WarningServerConnection
+
+    # def post_init
+    #   # empty
+    # end
     
     def callback=(c)
       @callback = c

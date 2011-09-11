@@ -45,6 +45,8 @@ class ProxyMachine
       try_connect
     end
     
+    attr_reader :inactivity_warning_timeout, :inactivity_warning_callback
+    
     def try_connect
       @commands = @routes.shift
       $logger.info "#{peer} #{@commands.inspect}"
@@ -60,8 +62,10 @@ class ProxyMachine
         end
         @connect_timeout = @commands[:connect_timeout]
         @inactivity_timeout = @commands[:inactivity_timeout]
+        @inactivity_warning_timeout = @commands[:inactivity_warning_timeout]
         @connect_error_callback = @commands[:connect_error_callback]
         @inactivity_error_callback = @commands[:inactivity_error_callback]
+        @inactivity_warning_callback = @commands[:inactivity_warning_callback]
         connect_to_server
       elsif close = @commands[:close]
         if close == true
@@ -83,7 +87,7 @@ class ProxyMachine
       host, port = @remote
       $logger.info "Establishing new connection with #{host}:#{port}"
       cb = @commands[:callback]
-      klass = cb ? CallbackServerConnection : ServerConnection
+      klass = cb ? CallbackServerConnection : WarningServerConnection
       @server_side = klass.request(host, port, self)
       @server_side.callback = cb if cb
       @server_side.pending_connect_timeout = @connect_timeout
@@ -99,6 +103,12 @@ class ProxyMachine
       @buffer.each { |data| @server_side.send_data(data) }
       @buffer = []
       proxy_incoming_to(@server_side, 10240)
+    end
+    
+    def inactivity_warning_triggered
+      proc {
+        (@inactivity_warning_callback || ProxyMachine.inactivity_warning_callback).call(@remote.join(':'))
+      }
     end
 
     # Called by the server side when a connection could not be established,

@@ -1,4 +1,4 @@
-$logger = Logger.new(File.new('/dev/null', 'w'))
+$logger = Logger.new(File.new('/tmp/proxymachine-server-test', 'w'))
 
 callback = proc do |data|
   data + ":callback"
@@ -24,16 +24,21 @@ proxy do |data|
   elsif data == 'connect reject'
     { :remote => "localhost:9989" }
   elsif data == 'inactivity'
-    { :remote => "localhost:9980", :data => 'sleep 3', :inactivity_timeout => 1 }
+    { :remote => "localhost:9980", :data => 'sleep 3', :inactivity_timeout => 1, :inactivity_warning_timeout => 0.5 }
   else
     { :close => true }
   end
 end
 
-ERROR_FILE = File.expand_path('/tmp/proxy_error', __FILE__)
+ERROR_FILE = '/tmp/proxy_error'
+WARN_FILE = '/tmp/proxy_warn'
 
 proxy_connect_error do |remote|
   File.open(ERROR_FILE, 'wb') { |fd| fd.write("connect error: #{remote}") }
+end
+
+proxy_inactivity_warning do |remote|
+  File.open(WARN_FILE, 'wb') { |fd| fd.write("activity warning: #{remote}") }
 end
 
 proxy_inactivity_error do |remote|

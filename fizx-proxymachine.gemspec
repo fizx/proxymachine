@@ -48,10 +48,10 @@ Gem::Specification.new do |s|
 
   ## List your development dependencies here. Development dependencies are
   ## those that are only needed during development
-  s.add_development_dependency(%q<rake>, ["~> 0.8.7"])
+  # s.add_development_dependency(%q<rake>, ["~> 0.8.7"])
   s.add_development_dependency(%q<shoulda>, ["~> 2.11.3"])
-  s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
-  s.add_development_dependency("ruby-debug")
+  # s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
+  # s.add_development_dependency("ruby-debug")
 
   ## Leave this section as-is. It will be automatically generated from the
   ## contents of your Git repository via the gemspec task. DO NOT REMOVE
