@@ -41,6 +41,10 @@ class ProxymachineTest < Test::Unit::TestCase
     assert_proxy('localhost', 9990, 'g', 'g3-9980:g2')
   end
 
+  should "handle delayed routes" do
+    assert_proxy('localhost', 9990, 'delayed', 'ohai')
+  end
+
   should "handle noop" do
     sock = TCPSocket.new('localhost', 9990)
     sock.write('e' * 2048)
@@ -53,7 +57,7 @@ class ProxymachineTest < Test::Unit::TestCase
   should "execute a callback" do
     assert_proxy('localhost', 9990, 'h', '9980:h:callback')
   end
-  
+
   should "call proxy_connect_error when a connection is rejected" do
     sock = TCPSocket.new('localhost', 9990)
     sock.write('connect reject')
@@ -73,7 +77,7 @@ class ProxymachineTest < Test::Unit::TestCase
     assert_equal "activity error: localhost:9980", File.read(@proxy_error_file)
     sock.close
   end
-  
+
   should "call proxy_inactivity_error when initial read times out" do
     sock = TCPSocket.new('localhost', 9990)
     sent = Time.now

@@ -4,7 +4,21 @@ callback = proc do |data|
   data + ":callback"
 end
 
-proxy do |data|
+class TestServerConnection < EventMachine::Connection
+  def self.request(host, port, callback)
+    EventMachine.connect(host, port, self, callback)
+  end
+
+  def initialize(callback)
+    @callback = callback
+  end
+
+  def receive_data(data)
+    @callback.call(data)
+  end
+end
+
+proxy do |data, conn|
   if data == 'a'
     { :remote => "localhost:9980" }
   elsif data == 'b'
@@ -25,6 +39,12 @@ proxy do |data|
     { :remote => "localhost:9989" }
   elsif data == 'inactivity'
     { :remote => "localhost:9980", :data => 'sleep 3', :inactivity_timeout => 1, :inactivity_warning_timeout => 0.5 }
+  elsif data == 'delayed'
+    sc = TestServerConnection.request("localhost", 9981, proc{
+      conn.establish_remote_server(:close => "ohai")
+    })
+    sc.send_data "delayed"
+    { :noop => true }
   else
     { :close => true }
   end

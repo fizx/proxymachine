@@ -39,14 +39,14 @@ class ProxyMachine
     # Called when new data is available from the client but no remote
     # server has been established. If a remote can be established, an
     # attempt is made to connect and proxy to the remote server.
-    def establish_remote_server
+    def establish_remote_server(routes = nil)
       fail "establish_remote_server called with remote established" if @remote
-      @routes = [ProxyMachine.router.call(@buffer.join)].flatten
+      @routes = [routes || ProxyMachine.router.call(@buffer.join, self) || {}].flatten
       try_connect
     end
-    
+
     attr_reader :inactivity_warning_timeout, :inactivity_warning_callback
-    
+
     def try_connect
       @commands = @routes.shift
       $logger.info "#{peer} #{@commands.inspect}"
@@ -104,7 +104,7 @@ class ProxyMachine
       @buffer = []
       proxy_incoming_to(@server_side, 10240)
     end
-    
+
     def inactivity_warning_triggered
       proc {
         (@inactivity_warning_callback || ProxyMachine.inactivity_warning_callback).call(@remote.join(':'))

@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = 'fizx-proxymachine'
-  s.version           = '1.7.1'
+  s.version           = '1.8.0'
   s.date              = '2011-05-07'
   s.rubyforge_project = 'fizx-proxymachine'
 
@@ -50,8 +50,6 @@ Gem::Specification.new do |s|
   ## those that are only needed during development
   s.add_development_dependency(%q<rake>, ["~> 0.8.7"])
   s.add_development_dependency(%q<shoulda>, ["~> 2.11.3"])
-  # s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
-  # s.add_development_dependency("ruby-debug")
 
   ## Leave this section as-is. It will be automatically generated from the
   ## contents of your Git repository via the gemspec task. DO NOT REMOVE
