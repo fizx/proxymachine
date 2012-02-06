@@ -28,7 +28,8 @@ class ProxyMachine
     @@counter
   end
 
-  def self.incr
+  def self.incr(client = nil)
+    @@incr_callback && @@incr_callback.call(client)
     @@totalcounter += 1
     @@counter += 1
     @@maxcounter = @@counter if @@counter > @@maxcounter
@@ -36,7 +37,8 @@ class ProxyMachine
     @@counter
   end
 
-  def self.decr
+  def self.decr(client = nil)
+    @@decr_callback &&@@decr_callback.call(client)
     @@counter -= 1
     if $server.nil?
       $logger.info "Waiting for #{@@counter} connections to finish."
@@ -86,15 +88,31 @@ class ProxyMachine
   def self.set_inactivity_error_callback(&block)
     @@inactivity_error_callback = block
   end
-  
+
   def self.set_inactivity_warning_callback(&block)
     @@inactivity_warning_callback = block
+  end
+
+  def self.set_incr_callback(&block)
+    @@incr_callback = block
+  end
+
+  def self.set_decr_callback(&block)
+    @@decr_callback = block
+  end
+
+  def self.incr_callback(&block)
+    @@incr_callback
+  end
+
+  def self.decr_callback(&block)
+    @@decr_callback
   end
 
   def self.inactivity_error_callback
     @@inactivity_error_callback
   end
-  
+
   def self.inactivity_warning_callback
     @@inactivity_warning_callback
   end
@@ -108,6 +126,9 @@ class ProxyMachine
     @@connect_error_callback ||= proc { |remote| }
     @@inactivity_error_callback ||= proc { |remote| }
     @@inactivity_warning_callback ||= proc { |remote| }
+    @@incr_callback ||= proc { |remote| }
+    @@decr_callback ||= proc { |remote| }
+
     self.update_procline
     EM.epoll
 
@@ -138,9 +159,9 @@ module Kernel
   def proxy_inactivity_error(&block)
     ProxyMachine.set_inactivity_error_callback(&block)
   end
-  
+
   def proxy_inactivity_warning(&block)
     ProxyMachine.set_inactivity_warning_callback(&block)
   end
-  
+
 end

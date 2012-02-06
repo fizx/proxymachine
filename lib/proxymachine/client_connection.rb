@@ -15,7 +15,7 @@ class ProxyMachine
       @connected = false
       @connect_timeout = nil
       @inactivity_timeout = nil
-      ProxyMachine.incr
+      ProxyMachine.incr(self)
     end
 
     def peer
@@ -145,7 +145,7 @@ class ProxyMachine
 
     def unbind
       @server_side.close_connection_after_writing if @server_side
-      ProxyMachine.decr
+      ProxyMachine.decr(self)
     end
 
     # Proxy connection has been lost
