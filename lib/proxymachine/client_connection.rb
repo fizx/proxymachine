@@ -107,7 +107,7 @@ class ProxyMachine
 
     def inactivity_warning_triggered
       proc {
-        (@inactivity_warning_callback || ProxyMachine.inactivity_warning_callback).call(@remote.join(':'))
+        (@inactivity_warning_callback || ProxyMachine.inactivity_warning_callback).call(@remote.join(':'), @buffer.join, self)
       }
     end
 
@@ -120,7 +120,7 @@ class ProxyMachine
       if @connected
         $logger.error "Connection with #{@remote.join(':')} was terminated prematurely."
         close_connection
-        (@connect_error_callback || ProxyMachine.connect_error_callback).call(@remote.join(':'))
+        (@connect_error_callback || ProxyMachine.connect_error_callback).call(@remote.join(':'), @buffer.join, self)
       elsif @routes.size > 0
         @tries += 1
         $logger.warn "Retrying connection with #{@remote.join(':')} (##{@tries})"
@@ -128,7 +128,7 @@ class ProxyMachine
       else
         $logger.error "Connect #{@remote.join(':')} failed after exhausting failovers."
         close_connection
-        (@connect_error_callback || ProxyMachine.connect_error_callback).call(@remote.join(':'))
+        (@connect_error_callback || ProxyMachine.connect_error_callback).call(@remote.join(':'), @buffer.join, self)
       end
     end
 
@@ -140,7 +140,7 @@ class ProxyMachine
       $logger.error "Disconnecting #{@remote.join(':')} after #{elapsed}s of inactivity (> #{timeout.inspect})"
       @server_side = nil
       close_connection
-      (@inactivity_error_callback || ProxyMachine.inactivity_error_callback).call(@remote.join(':'))
+      (@inactivity_error_callback || ProxyMachine.inactivity_error_callback).call(@remote.join(':'), @buffer.join, self)
     end
 
     def unbind
