@@ -54,13 +54,16 @@ ERROR_FILE = '/tmp/proxy_error'
 WARN_FILE = '/tmp/proxy_warn'
 
 proxy_connect_error do |remote, data, conn|
-  File.open(ERROR_FILE, 'wb') { |fd| fd.write("connect error: #{remote}") }
+  msg = [remote, data].reject{|str|str.nil? || str.length == 0}.join(', ')
+  File.open(ERROR_FILE, 'wb') { |fd| fd.write("connect error: #{msg}") }
 end
 
 proxy_inactivity_warning do |remote, data, conn|
-  File.open(WARN_FILE, 'wb') { |fd| fd.write("activity warning: #{remote}") }
+  msg = [remote, data].reject{|str|str.nil? || str.length == 0}.join(', ')
+  File.open(WARN_FILE, 'wb') { |fd| fd.write("activity warning: #{msg}") }
 end
 
 proxy_inactivity_error do |remote, data, conn|
-  File.open(ERROR_FILE, 'wb') { |fd| fd.write("activity error: #{remote}") }
+  msg = [remote, data].reject{|str|str.nil? || str.length == 0}.join(', ')
+  File.open(ERROR_FILE, 'wb') { |fd| fd.write("activity error: #{msg}") }
 end
