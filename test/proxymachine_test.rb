@@ -64,7 +64,7 @@ class ProxymachineTest < Test::Unit::TestCase
     sock.flush
     assert_equal "", sock.read
     sock.close
-    assert_equal "connect error: localhost:9989", File.read(@proxy_error_file)
+    assert_equal "connect error: localhost:9989, connect reject", File.read(@proxy_error_file)
   end
 
   should "call proxy_inactivity_error when initial read times out" do
