@@ -53,14 +53,14 @@ end
 ERROR_FILE = '/tmp/proxy_error'
 WARN_FILE = '/tmp/proxy_warn'
 
-proxy_connect_error do |remote|
+proxy_connect_error do |remote, data, conn|
   File.open(ERROR_FILE, 'wb') { |fd| fd.write("connect error: #{remote}") }
 end
 
-proxy_inactivity_warning do |remote|
+proxy_inactivity_warning do |remote, data, conn|
   File.open(WARN_FILE, 'wb') { |fd| fd.write("activity warning: #{remote}") }
 end
 
-proxy_inactivity_error do |remote|
+proxy_inactivity_error do |remote, data, conn|
   File.open(ERROR_FILE, 'wb') { |fd| fd.write("activity error: #{remote}") }
 end
